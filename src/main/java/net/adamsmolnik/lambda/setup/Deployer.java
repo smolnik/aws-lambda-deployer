@@ -36,17 +36,19 @@ public class Deployer {
 			collectionConfig.functionName = "photo-collection-handler";
 			updateAll(collectionConfig);
 
-			Config zipperConfig = new Config();
-			zipperConfig.jar = "photo-collection-handlers.jar";
-			zipperConfig.jarSrcDir = "/workspaces/workspace/photo-collection-handlers/target/";
-			zipperConfig.functionName = "photo-zipper";
-			updateLambda(zipperConfig);
+			collectionConfig.functionName = "photo-zipper";
+			updateLambda(collectionConfig);
 
-			Config uploadConfig = new Config();
-			uploadConfig.jar = "upload-photo-handlers.jar";
-			uploadConfig.jarSrcDir = "/workspaces/workspace/upload-photo-handlers/target/";
-			uploadConfig.functionName = "upload-photo-handler";
-			updateAll(uploadConfig);
+			collectionConfig.functionName = "s3-data-push-handler";
+			updateLambda(collectionConfig);
+
+			/*
+			 * Config uploadConfig = new Config(); uploadConfig.jar =
+			 * "upload-photo-handlers.jar"; uploadConfig.jarSrcDir =
+			 * "/workspaces/workspace/upload-photo-handlers/target/";
+			 * uploadConfig.functionName = "upload-photo-handler";
+			 * updateAll(uploadConfig);
+			 */
 		} finally {
 			TM.shutdownNow();
 		}
