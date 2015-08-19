@@ -1,5 +1,9 @@
 package net.adamsmolnik.lambda.setup;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
@@ -13,6 +17,7 @@ import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.BucketWebsiteConfiguration;
 
 public class WorkshopSetup {
 
@@ -25,27 +30,50 @@ public class WorkshopSetup {
 			+ "		      \"Action\":[\"s3:GetObject\"],\r\n" + "		      \"Resource\":[\"arn:aws:s3:::${bucket}/*\"]\r\n" + "		    }\r\n"
 			+ "		  ]\r\n" + "		}";
 
-	public static void main(String[] args) {
+	public static void main1(String[] args) {
 		int numberOfStudents = 12;
 		for (int i = 22; i <= 22; i++) {
 			String studentId = format(i);
-			S3.createBucket(studentId + "-upload-photos-ext");
-			String targetBucket = studentId + "-codepot-photos";
-			S3.createBucket(targetBucket);
-			S3.setBucketPolicy(targetBucket, POLICY.replace("${bucket}", targetBucket));
-			CreateTableRequest ctr = new CreateTableRequest().withTableName(studentId + "-codepot-photos")
-					.withProvisionedThroughput(new ProvisionedThroughput(1L, 1L))
-					.withAttributeDefinitions(new AttributeDefinition("userId", ScalarAttributeType.S),
-							new AttributeDefinition("photoKey", ScalarAttributeType.S),
-							new AttributeDefinition("photoTakenDate", ScalarAttributeType.S))
-					.withKeySchema(new KeySchemaElement("userId", KeyType.HASH), new KeySchemaElement("photoKey", KeyType.RANGE))
-					.withLocalSecondaryIndexes(new LocalSecondaryIndex().withIndexName("photoTakenDate-index")
-							.withKeySchema(new KeySchemaElement("userId", KeyType.HASH), new KeySchemaElement("photoTakenDate", KeyType.RANGE))
-							.withProjection(new Projection().withProjectionType(ProjectionType.ALL)));
-			DB.createTable(ctr);
-
+			s3Setup(studentId);
+			dbSetup(studentId);
 		}
 
+	}
+
+	private static void dbSetup(String studentId) {
+		CreateTableRequest ctr = new CreateTableRequest().withTableName(studentId + "-codepot-photos")
+				.withProvisionedThroughput(new ProvisionedThroughput(1L, 1L))
+				.withAttributeDefinitions(new AttributeDefinition("userId", ScalarAttributeType.S),
+						new AttributeDefinition("photoKey", ScalarAttributeType.S), new AttributeDefinition("photoTakenDate", ScalarAttributeType.S))
+				.withKeySchema(new KeySchemaElement("userId", KeyType.HASH), new KeySchemaElement("photoKey", KeyType.RANGE))
+				.withLocalSecondaryIndexes(new LocalSecondaryIndex().withIndexName("photoTakenDate-index")
+						.withKeySchema(new KeySchemaElement("userId", KeyType.HASH), new KeySchemaElement("photoTakenDate", KeyType.RANGE))
+						.withProjection(new Projection().withProjectionType(ProjectionType.ALL)));
+		DB.createTable(ctr);
+	}
+
+	private static void s3Setup(String studentId) {
+		S3.createBucket(studentId + "-upload-photos-ext");
+		String targetBucket = studentId + "-codepot-photos";
+		S3.createBucket(targetBucket);
+		S3.setBucketPolicy(targetBucket, POLICY.replace("${bucket}", targetBucket));
+		s3WebSetup(targetBucket);
+	}
+
+	private static void s3WebSetup(String bucketName) {
+		S3.setBucketWebsiteConfiguration(bucketName, new BucketWebsiteConfiguration("index.html"));
+		loadHtmlContent(bucketName);
+	}
+
+	private static void loadHtmlContent(String bucketName) {
+		try {
+			Files.walk(Paths.get("./src/main/resources/public_html")).filter(Files::isRegularFile).forEach(p -> {
+				String objectKey = p.subpath(5, p.getNameCount()).toString().replaceAll("\\\\", "/");
+				S3.putObject(bucketName, objectKey, p.toFile());
+			});
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	static String format(int i) {

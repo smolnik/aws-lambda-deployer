@@ -1,0 +1,56 @@
+body{
+    background-repeat:no-repeat;
+    font-family: Trebuchet MS, Lucida Sans Unicode, Arial, sans-serif;
+    margin:20px;
+    text-align: center;
+}
+#ad{
+    padding-top:220px;
+    padding-left:10px;
+}
+.photoBox {
+    position: absolute;
+    visibility: hidden;
+    border: solid 1px #CCC;
+    padding: 5px;
+}
+
+div.img {
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid #0000ff;
+    height: auto;
+    width: auto;
+    float: left;
+    text-align: center;
+}
+
+div.img img {
+    display: inline;
+    margin: 5px;
+    border: 1px solid #ffffff;
+}
+
+div.img a:hover img {
+    border:1px solid #0000ff;
+}
+
+div.desc {
+    text-align: center;
+    font-weight: normal;
+    width: 120px;
+    margin: 5px;
+}
+
+.center {
+    margin: auto;
+    width: 60%;
+    padding: 10px;
+    text-align: center;
+}
+
+.base {
+    padding: 10px;
+    margin: auto;
+    text-align: center;
+}
