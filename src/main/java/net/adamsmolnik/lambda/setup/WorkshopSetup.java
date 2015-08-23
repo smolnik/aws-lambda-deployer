@@ -69,15 +69,34 @@ public class WorkshopSetup {
 	static String format(int i) {
 		return String.format("%03d", i);
 	}
-	
-	public static void main(String[] args) {
+
+	public static void main1(String[] args) throws Exception {
 		int numberOfStudents = 12;
 		for (int i = 24; i <= 24; i++) {
 			String studentId = format(i);
 			s3Setup(studentId);
 			dbSetup(studentId);
 		}
+	}
 
+	public static void main(String[] args) throws Exception {
+		fallback();
+	}
+
+	private static void fallback() throws IOException {
+		String photoCollectionHandlersDir = "/workspaces/workspace/exercise-photo-collection-handlers/target";
+		checkAndPut(photoCollectionHandlersDir);
+		String uploadPotoHandlers = "workspaces/workspace/exercise-upload-photo-handlers/target";
+		checkAndPut(uploadPotoHandlers);
+	}
+
+	private static void checkAndPut(String dir) throws IOException {
+		Files.newDirectoryStream(Paths.get(dir)).forEach(p -> {
+			if (!Files.isRegularFile(p) || !p.getFileName().toString().startsWith("0")) {
+				return;
+			}
+			S3.putObject("lambda-jars", "fallback/" + p.getFileName(), p.toFile());
+		});
 	}
 
 }
