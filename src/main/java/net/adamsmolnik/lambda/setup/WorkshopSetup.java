@@ -30,16 +30,6 @@ public class WorkshopSetup {
 			+ "		      \"Action\":[\"s3:GetObject\"],\r\n" + "		      \"Resource\":[\"arn:aws:s3:::${bucket}/*\"]\r\n" + "		    }\r\n"
 			+ "		  ]\r\n" + "		}";
 
-	public static void main1(String[] args) {
-		int numberOfStudents = 12;
-		for (int i = 22; i <= 22; i++) {
-			String studentId = format(i);
-			s3Setup(studentId);
-			dbSetup(studentId);
-		}
-
-	}
-
 	private static void dbSetup(String studentId) {
 		CreateTableRequest ctr = new CreateTableRequest().withTableName(studentId + "-codepot-photos")
 				.withProvisionedThroughput(new ProvisionedThroughput(1L, 1L))
@@ -78,6 +68,16 @@ public class WorkshopSetup {
 
 	static String format(int i) {
 		return String.format("%03d", i);
+	}
+	
+	public static void main(String[] args) {
+		int numberOfStudents = 12;
+		for (int i = 24; i <= 24; i++) {
+			String studentId = format(i);
+			s3Setup(studentId);
+			dbSetup(studentId);
+		}
+
 	}
 
 }

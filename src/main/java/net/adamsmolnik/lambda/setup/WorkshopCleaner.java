@@ -23,7 +23,7 @@ public class WorkshopCleaner {
     
 	public static void main(String[] args) {
 		List<String> students = new ArrayList<>();
-        for (int i = 0; i < 0; i++) {
+        for (int i = 1; i < 1; i++) {
         	students.add(WorkshopSetup.format(i));
 		}
 
@@ -43,7 +43,8 @@ public class WorkshopCleaner {
         
         students.forEach(s->{
             DB.deleteTable(s + "-codepot-photos");
-            LBD.deleteFunction(new DeleteFunctionRequest().withFunctionName(s + ""));
+            LBD.deleteFunction(new DeleteFunctionRequest().withFunctionName(s + "-photo-collection-handler"));
+            LBD.deleteFunction(new DeleteFunctionRequest().withFunctionName(s + "-upload-photo-handler"));
         });
         
 	}
