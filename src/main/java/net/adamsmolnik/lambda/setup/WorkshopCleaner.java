@@ -23,12 +23,12 @@ public class WorkshopCleaner {
     
 	public static void main(String[] args) {
 		List<String> students = new ArrayList<>();
-        for (int i = 1; i < 1; i++) {
+        for (int i = 24; i <=24 ; i++) {
         	students.add(WorkshopSetup.format(i));
 		}
 
 		
-        S3.listBuckets().stream().filter(b -> b.getName().startsWith("00")).forEach(b -> {
+        S3.listBuckets().stream().filter(b -> b.getName().startsWith("0")).forEach(b -> {
             VersionListing vl = S3.listVersions(b.getName(), "");
             vl.getVersionSummaries().forEach(v -> {
                 S3.deleteVersion(b.getName(), v.getKey(), v.getVersionId());
